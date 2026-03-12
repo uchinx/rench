@@ -1,0 +1,30 @@
+[package]
+name = "rench"
+version = "0.1.0"
+edition = "2021"
+description = "A high-performance HTTP benchmarking tool"
+license = "MIT"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+hyper = { version = "1", features = ["client", "http1", "http2"] }
+hyper-util = { version = "0.1", features = ["client", "client-legacy", "http1", "http2", "tokio"] }
+http-body-util = "0.1"
+bytes = "1"
+clap = { version = "4", features = ["derive"] }
+hdrhistogram = "7"
+colored = "2"
+url = "2"
+http = "1"
+rustls = { version = "0.23", default-features = false, features = ["ring", "logging", "std", "tls12"] }
+hyper-rustls = { version = "0.27", features = ["http1", "http2", "ring", "webpki-tokio"] }
+tokio-rustls = "0.26"
+webpki-roots = "0.26"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+target-cpu = "native"
