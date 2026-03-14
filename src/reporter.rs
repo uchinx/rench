@@ -35,6 +35,13 @@ pub fn print_header(args: &Args) {
         if args.http2 { "HTTP/2" } else { "HTTP/1.1" }.bright_blue()
     );
     println!("{}", "  ─────────────────────────────────".bright_black());
+    if args.insecure {
+        println!(
+            "  {} {}",
+            "WARNING:".bright_yellow().bold(),
+            "TLS certificate verification is disabled!".bright_yellow()
+        );
+    }
     println!();
 }
 
