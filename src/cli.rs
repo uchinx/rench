@@ -87,3 +87,26 @@ fn parse_duration(s: &str) -> Result<Duration, String> {
             .map_err(|e| format!("invalid duration '{}': {}", s, e))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_duration() {
+        // Success cases
+        assert_eq!(parse_duration("100ms"), Ok(Duration::from_millis(100)));
+        assert_eq!(parse_duration("10s"), Ok(Duration::from_secs(10)));
+        assert_eq!(parse_duration("2m"), Ok(Duration::from_secs(120)));
+        assert_eq!(parse_duration("30"), Ok(Duration::from_secs(30)));
+
+        // Whitespace
+        assert_eq!(parse_duration("  30s  "), Ok(Duration::from_secs(30)));
+
+        // Error cases
+        assert!(parse_duration("abc").is_err());
+        assert!(parse_duration("10x").is_err());
+        assert!(parse_duration("").is_err());
+        assert!(parse_duration("ms").is_err());
+    }
+}
