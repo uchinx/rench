@@ -85,7 +85,6 @@ pub struct AggregatedStats {
 
 impl AggregatedStats {
     pub fn merge(workers: Vec<WorkerStats>, elapsed: Duration) -> Self {
-        let mut merged = Histogram::new_with_bounds(1, 60_000_000, 3).unwrap();
         let mut agg = AggregatedStats {
             latency_hist: Histogram::new_with_bounds(1, 60_000_000, 3).unwrap(),
             total_requests: 0,
@@ -101,7 +100,7 @@ impl AggregatedStats {
         };
 
         for w in workers {
-            merged.add(&w.latency_hist).ok();
+            agg.latency_hist.add(&w.latency_hist).ok();
             agg.total_requests += w.requests_sent;
             agg.status_2xx += w.status_2xx;
             agg.status_3xx += w.status_3xx;
@@ -113,7 +112,6 @@ impl AggregatedStats {
             agg.bytes_received += w.bytes_received;
         }
 
-        agg.latency_hist = merged;
         agg
     }
 
