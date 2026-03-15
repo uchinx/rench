@@ -67,6 +67,33 @@ impl BenchConfig {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_build_client_insecure() {
+        let args = Args {
+            url: "https://localhost".to_string(),
+            connections: 1,
+            requests: 0,
+            duration: Duration::from_secs(1),
+            threads: 1,
+            method: "GET".to_string(),
+            headers: vec![],
+            body: None,
+            body_file: None,
+            http2: false,
+            rate: 0,
+            timeout: Duration::from_secs(5),
+            insecure: true,
+            latency: false,
+        };
+        let config = BenchConfig::from_args(&args, 1).unwrap();
+        let _client = build_client(&config, true, 1);
+    }
+}
+
 fn build_client(config: &BenchConfig, insecure: bool, num_connections: usize) -> HyperClient {
     let mut http = HttpConnector::new();
     http.set_nodelay(true);
@@ -303,7 +330,12 @@ async fn send_request(
     Ok((status, bytes))
 }
 
-/// TLS certificate verifier that accepts everything (for --insecure flag)
+/// SECURITY: TLS certificate verifier that accepts everything (for --insecure flag).
+///
+/// This implementation completely bypasses TLS certificate and signature verification,
+/// making the connection vulnerable to Man-in-the-Middle (MitM) attacks.
+/// It should ONLY be used for testing with trusted endpoints and never in production
+/// or over untrusted networks.
 #[derive(Debug)]
 struct NoVerifier;
 
